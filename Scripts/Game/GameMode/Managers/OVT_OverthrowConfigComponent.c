@@ -120,12 +120,12 @@ class OVT_OverthrowConfigComponent: OVT_Component
 	[Attribute( defvalue: "FIA", uiwidget: UIWidgets.EditBox, desc: "Faction affiliation of the player's side", category: "Factions")]
 	string m_sPlayerFaction;
 	
-	[Attribute( defvalue: "USSR", uiwidget: UIWidgets.EditBox, desc: "The faction occupying this map (the enemy)", category: "Factions")]
+	[Attribute( defvalue: "US", uiwidget: UIWidgets.EditBox, desc: "The faction occupying this map (the enemy)", category: "Factions")]
 	string m_sDefaultOccupyingFaction;
 	
-	string m_sOccupyingFaction = "USSR";
+	string m_sOccupyingFaction = "US";
 	
-	[Attribute( defvalue: "US", uiwidget: UIWidgets.EditBox, desc: "The faction supporting the player", category: "Factions")]
+	[Attribute( defvalue: "USSR", uiwidget: UIWidgets.EditBox, desc: "The faction supporting the player", category: "Factions")]
 	string m_sSupportingFaction;
 	
 	[Attribute("", UIWidgets.Object)]

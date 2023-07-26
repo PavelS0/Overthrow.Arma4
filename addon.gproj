@@ -1,7 +1,7 @@
 GameProject {
- ID "Overthrow"
- GUID "59B657D731E2A11D"
- TITLE "Overthrow"
+ ID "Overthrow_by_avantsb"
+ GUID "5DF467776A00B8E3"
+ TITLE "Overthrow BY AVANTIS"
  Dependencies {
   "58D0FB3206B6F859" "59B70A5A19E9B51E" "5D6EBC81EB1842EF"
  }
@@ -30,13 +30,13 @@ GameProject {
     }
    }
   }
+  GameProjectConfig HEADLESS {
+  }
   GameProjectConfig XBOX_ONE {
   }
   GameProjectConfig XBOX_SERIES {
   }
   GameProjectConfig PS4 {
-  }
-  GameProjectConfig HEADLESS {
   }
  }
 }
