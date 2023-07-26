@@ -30,7 +30,8 @@ class OVT_MainMenuContextOverrideComponent : OVT_Component
 	}
 	
 	override void EOnFrame(IEntity owner, float timeSlice) //!EntityEvent.FRAME
-	{		
+	{	
+		m_Config = OVT_OverthrowConfigComponent.GetInstance();
 		if(!m_bRegistered)
 		{
 			if(!m_bShowOnMap || !m_UiInfo) 

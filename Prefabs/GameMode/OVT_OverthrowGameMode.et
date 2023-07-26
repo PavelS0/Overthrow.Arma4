@@ -220,6 +220,8 @@ OVT_OverthrowGameMode {
    m_pQRFControllerPrefab "{A7D27DFA72B705D0}Prefabs/Controllers/OVT_QRFController.et"
   }
   OVT_OverthrowConfigComponent "{59724C8C935D8E5D}" {
+   m_sDefaultOccupyingFaction "US"
+   m_sSupportingFaction "USSR"
    m_aCameraPositions {
     OVT_CameraPosition "{5D5826DD31952987}" {
      position 10455.49 40.22 413.76
