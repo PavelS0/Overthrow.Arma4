@@ -7,9 +7,6 @@ class OVT_OverthrowGameMode : SCR_BaseGameMode
 	[Attribute()]
 	ref OVT_UIContext m_StartGameUIContext;
 	
-	[Attribute()]
-	ResourceName m_PlayerCommsPrefab;
-	
 	[Attribute(uiwidget: UIWidgets.ResourceNamePicker, desc: "Start Camera Prefab", params: "et")]
 	ResourceName m_StartCameraPrefab;
 	
@@ -24,6 +21,8 @@ class OVT_OverthrowGameMode : SCR_BaseGameMode
 	protected OVT_JobManagerComponent m_JobManager;
 	protected OVT_SkillManagerComponent m_SkillManager;
 	protected OVT_PersistenceManagerComponent m_Persistence;
+	
+	protected CameraBase m_pCamera;
 	
 	ref set<string> m_aInitializedPlayers;
 	ref set<string> m_aHintedPlayers;
@@ -68,7 +67,13 @@ class OVT_OverthrowGameMode : SCR_BaseGameMode
 		m_Config.m_iOccupyingFactionIndex = fm.GetFactionIndex(fm.GetFactionByKey(m_Config.m_sOccupyingFaction));
 				
 		m_StartGameUIContext.CloseLayout();
-		m_bGameStarted = true;		
+		m_bGameStarted = true;	
+		
+		if(!m_Config.m_Difficulty)
+		{
+			Print("No difficulty settings found! Reverting to default");
+			m_Config.m_Difficulty = new OVT_DifficultySettings();
+		}	
 		
 		if(m_EconomyManager)
 		{
@@ -113,21 +118,7 @@ class OVT_OverthrowGameMode : SCR_BaseGameMode
 		}		
 		
 		Print("Overthrow Starting");
-		m_bGameInitialized = true;
-		
-		GetGame().GetCallqueue().CallLater(CheckUpdate, 10000, true, this);		
-	}
-	
-	protected void CheckUpdate()
-	{
-		TimeAndWeatherManagerEntity timeMgr = GetGame().GetTimeAndWeatherManager();
-		TimeContainer time = timeMgr.GetTime();
-		if(time.m_iHours >= 18 || time.m_iHours < 6)
-		{
-			timeMgr.SetDayDuration(86400 / m_Config.m_iNightTimeMultiplier);
-		}else{
-			timeMgr.SetDayDuration(86400 / m_Config.m_iTimeMultiplier);
-		}
+		m_bGameInitialized = true;	
 	}
 	
 	override void EOnFrame(IEntity owner, float timeSlice)
@@ -191,7 +182,14 @@ class OVT_OverthrowGameMode : SCR_BaseGameMode
 			SetRandomCameraPosition();
 		}
 		
-		if(m_bGameInitialized) return;
+		if(m_bGameInitialized)
+		{
+			if(m_pCamera)
+			{
+				SCR_EntityHelper.DeleteEntityAndChildren(m_pCamera);
+				m_pCamera = null;
+			}
+		}
 		m_StartGameUIContext.EOnFrame(owner, timeSlice);
 	}
 	
@@ -336,9 +334,11 @@ class OVT_OverthrowGameMode : SCR_BaseGameMode
 		if(cam)
 		{			
 			CameraBase camera = CameraBase.Cast(cam);
+			camera.SetName("StartCam");
 			camera.SetAngles(pos.angles);
 			cameraMgr.SetCamera(camera);
 			m_bCameraSet = true;
+			m_pCamera = camera;
 		}		
 	}
 	
@@ -436,8 +436,6 @@ class OVT_OverthrowGameMode : SCR_BaseGameMode
 			return;
 		}
 		
-		CheckUpdate();
-		
 		m_Persistence = OVT_PersistenceManagerComponent.Cast(FindComponent(OVT_PersistenceManagerComponent));		
 		if(m_Persistence)
 		{
@@ -491,7 +489,6 @@ class OVT_OverthrowGameMode : SCR_BaseGameMode
 	{
 		m_aInitializedPlayers.Clear();
 		m_aHintedPlayers.Clear();
-		m_mPlayerGroups.Clear();
-		GetGame().GetCallqueue().Remove(CheckUpdate);	
+		m_mPlayerGroups.Clear();	
 	}
 }

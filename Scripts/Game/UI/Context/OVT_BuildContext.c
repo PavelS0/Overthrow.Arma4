@@ -6,7 +6,7 @@ class OVT_BuildContext : OVT_UIContext
 	[Attribute(uiwidget: UIWidgets.ResourceNamePicker, desc: "Build Camera Prefab", params: "et")]
 	ResourceName m_BuildCameraPrefab;
 	
-	SCR_CameraBase m_Camera;
+	SCR_ManualCamera m_Camera;
 	CameraBase m_PlayerCamera;
 	
 	Widget m_BuildWidget;
@@ -24,6 +24,7 @@ class OVT_BuildContext : OVT_UIContext
 	protected CameraManager m_CameraManager;
 	
 	const int MAX_FOB_BUILD_DIS = 100;
+	const int MAX_CAMP_BUILD_DIS = 50;
 	
 	bool m_bBuilding = false;
 	int m_iPrefabIndex = 0;
@@ -41,12 +42,9 @@ class OVT_BuildContext : OVT_UIContext
 	{		
 		if (m_bBuilding && m_Camera)	
 		{
-			if (m_CameraManager && m_CameraManager.CurrentCamera() != m_Camera)
-			{
-				m_CameraManager.SetCamera(m_Camera);
-			}
+			TryForceCamera();
 			
-			m_InputManager.ActivateContext("OverthrowBuildContext");
+			//m_InputManager.ActivateContext("OverthrowBuildContext");
 			
 			if(m_eBuildingEntity)
 			{
@@ -56,6 +54,22 @@ class OVT_BuildContext : OVT_UIContext
 				m_eBuildingEntity.Update();			
 			}
 		}
+	}
+	
+	protected bool TryForceCamera()
+	{
+		if (!m_Camera || !m_CameraManager)
+			return false;
+		
+		if (m_Camera != m_CameraManager.CurrentCamera())
+		{
+			array<CameraBase> cameras = {};
+			m_CameraManager.GetCamerasList(cameras);
+			if (cameras.Contains(m_Camera))
+				m_CameraManager.SetCamera(m_Camera);
+		}
+		
+		return true;
 	}
 	
 	override void OnShow()
@@ -192,11 +206,17 @@ class OVT_BuildContext : OVT_UIContext
 			}
 		}
 		
-		if(buildable.m_bBuildAtFOB)
+		if(buildable.m_bBuildAtCamp)
 		{	
-			vector fob = m_Resistance.GetNearestFOB(pos);		
+			vector fob = m_Resistance.GetNearestCamp(pos);		
 			dist = vector.Distance(fob, pos);
-			if(dist < MAX_FOB_BUILD_DIS) return true;	
+			if(dist < MAX_CAMP_BUILD_DIS) return true;	
+		}
+		
+		if(buildable.m_bBuildAtFOB && m_Resistance.m_bFOBDeployed)
+		{
+			dist = vector.Distance(m_Resistance.m_vFOBLocation, pos);
+			if(dist < MAX_FOB_BUILD_DIS) return true;
 		}
 							
 		return false;
@@ -251,11 +271,8 @@ class OVT_BuildContext : OVT_UIContext
 		params.TransformMode = ETransformMode.WORLD;		
 		params.Transform[3] = player.GetOrigin() + "0 15 0";
 						
-		IEntity cam = GetGame().SpawnEntityPrefabLocal(Resource.Load(m_BuildCameraPrefab),null,params);
-		if(cam)
-		{
-			m_Camera = SCR_CameraBase.Cast(cam);	
-		}
+		m_Camera = SCR_ManualCamera.Cast(GetGame().SpawnEntityPrefab(Resource.Load(m_BuildCameraPrefab), GetGame().GetWorld(), params));
+		m_Camera.SetName("BuildCam");
 	}
 	
 	protected void MoveCamera()
@@ -268,11 +285,12 @@ class OVT_BuildContext : OVT_UIContext
 	
 	protected void RevertCamera()
 	{
-		CameraManager cameraMgr = GetGame().GetCameraManager();		
-		cameraMgr.SetCamera(m_PlayerCamera);
-		
-		SCR_EntityHelper.DeleteEntityAndChildren(m_Camera);
-		m_Camera = null;
+		if (m_Camera)
+		{
+			m_Camera.Terminate();
+			m_Camera.SwitchToPreviousCamera();
+			delete m_Camera;
+		}
 	}
 	
 	void MoveRight(float value = 1, EActionTrigger reason = EActionTrigger.DOWN)

@@ -20,8 +20,8 @@ class OVT_MapContext : OVT_UIContext
 	protected bool m_bFastTravelActive = false;
 	protected bool m_bBusTravelActive = false;
 	
-	protected const int MAX_HOUSE_TRAVEL_DIS = 25;
-	protected const int MAX_FOB_TRAVEL_DIS = 40;
+	protected const int MAX_HOUSE_TRAVEL_DIS = 40;
+	protected const int MAX_FOB_TRAVEL_DIS = 100;
 	protected const int MIN_TRAVEL_DIS = 500;
 	
 	override void PostInit()
@@ -90,11 +90,6 @@ class OVT_MapContext : OVT_UIContext
 			}
 		}
 		
-		if(m_Resistance.DistanceToCamp(pos, m_sPlayerID) < MAX_HOUSE_TRAVEL_DIS)
-		{
-			return true;
-		}
-		
 		IEntity house = m_RealEstate.GetNearestOwned(m_sPlayerID, pos, MAX_HOUSE_TRAVEL_DIS);
 		if(house)
 		{
@@ -112,7 +107,13 @@ class OVT_MapContext : OVT_UIContext
 			return true;
 		}
 		
-		vector fob = m_Resistance.GetNearestFOB(pos);		
+		if(m_Resistance.m_bFOBDeployed)
+		{
+			dist = vector.Distance(m_Resistance.m_vFOBLocation, pos);
+			if(dist < MAX_FOB_TRAVEL_DIS) return true;
+		}
+		
+		vector fob = m_Resistance.GetNearestCamp(pos);		
 		dist = vector.Distance(fob, pos);
 		if(dist < MAX_FOB_TRAVEL_DIS) return true;		
 		

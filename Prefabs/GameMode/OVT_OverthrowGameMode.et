@@ -340,7 +340,6 @@ OVT_OverthrowGameMode {
      m_IsWarehouse 1
     }
    }
-   m_iTimeMultiplier 6
    m_pPlayerGroupPrefab "{9BED5CCD52C87E26}Prefabs/Groups/INDFOR/Group_Player.et"
    m_CivilianLoadout OVT_LoadoutConfig "{5D70ECF4724BC81E}" {
     m_aSlots {
@@ -393,8 +392,19 @@ OVT_OverthrowGameMode {
       }
      }
     }
+    OVT_VehicleUpgrades "{5E02EBD7116F279B}" {
+     m_pBasePrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
+     m_aUpgrades {
+      OVT_VehicleUpgrade "{5E02EBD7F727B31C}" {
+       m_pUpgradePrefab "{E6A31A5A6EA0AF04}Prefabs/Vehicles/Wheeled/M923A1/OverthrowMobileFOB.et"
+       m_iCost 10000
+      }
+     }
+    }
    }
    m_pHiredCivilianPrefab "{365CD448A5DABCCC}Prefabs/Groups/INDFOR/Group_CIV_Recruit.et"
+   m_pMobileFOBPrefab "{E6A31A5A6EA0AF04}Prefabs/Vehicles/Wheeled/M923A1/OverthrowMobileFOB.et"
+   m_pMobileFOBDeployedPrefab "{ABF741C3184846E9}Prefabs/Vehicles/Wheeled/M923A1/OverthrowMobileFOBDeployed.et"
   }
   OVT_RespawnSystemComponent "{5DEA8B45ED838B55}" {
    m_rDefaultPrefab "{3A99A99836F6B3DC}Prefabs/Characters/Factions/INDFOR/FIA/Character_Player.et"
@@ -402,6 +412,11 @@ OVT_OverthrowGameMode {
   OVT_SkillManagerComponent "{5D90EE077169A8A2}" {
    m_Skills OVT_SkillsConfig "{5D91035951D22CD1}" : "{F7740B6A7C4F6FB7}Configs/Player/overthrowSkills.conf" {
    }
+  }
+  OVT_TimeAndWeatherHandlerComponent "{5E02BE29723C0739}" {
+   m_fDayTimeAcceleration 6
+   m_fNightTimeAcceleration 12
+   m_bRandomStartingWeather 1
   }
   OVT_TownManagerComponent "{59724C983BF56C3B}" {
    m_aTownModifiers {
@@ -421,7 +436,12 @@ OVT_OverthrowGameMode {
   }
   SCR_CallsignManagerComponent "{59724C8C935D8E23}" {
   }
-  SCR_DestructionManagerComponent "{59724C8C935D8E20}" {
+  SCR_CommandingManagerComponent "{5DFEE7C53D7244B0}" {
+   m_sCommandsConfigPath "{54764D4E706F348C}Configs/Commanding/Commands.conf"
+  }
+  SCR_DataCollectorComponent "{5DFEE7C5E2762B63}" {
+  }
+  SCR_DestructionManagerComponent "{5DFEE7C5F4445327}" {
   }
   SCR_GameModeHealthSettings "{5D7A443950718AF0}" {
   }
@@ -438,6 +458,7 @@ OVT_OverthrowGameMode {
   SCR_MapConfigComponent "{5D56F4474D716C00}" {
   }
   SCR_NametagConfigComponent "{59724C8C935D8E28}" {
+   m_sConfigPath "{09F7AAA14A642683}Configs/NameTags/NametagFriendlies.conf"
   }
   SCR_NotificationSenderComponent "{5D7A443FDCA27CAE}" {
    m_iReceiveKillFeedType SAME_FACTION_ONLY
@@ -510,6 +531,5 @@ OVT_OverthrowGameMode {
   m_bOpenActionCloses 0
   m_bHideHUDOnShow 0
  }
- m_PlayerCommsPrefab "{1673675D02489268}Prefabs/GameMode/OVT_PlayerCommsEntity.et"
  m_StartCameraPrefab "{E8A19A7167535505}Prefabs/GameMode/OVT_StartCamera.et"
 }

@@ -565,7 +565,7 @@ class OVT_PlayerCommsComponent: OVT_Component
 		OVT_Global.GetResistanceFaction().AddGarrison(baseId, prefabIndex);
 	}
 	
-	void AddGarrisonFOB(OVT_FOBData base, ResourceName res)
+	void AddGarrisonFOB(OVT_CampData base, ResourceName res)
 	{
 		OVT_Faction faction = OVT_Global.GetConfig().GetPlayerFaction();
 		int index = faction.m_aGroupPrefabSlots.Find(res);
@@ -576,7 +576,7 @@ class OVT_PlayerCommsComponent: OVT_Component
 	protected void RpcAsk_AddGarrisonFOB(vector pos, int prefabIndex)
 	{
 		OVT_ResistanceFactionManager rf = OVT_Global.GetResistanceFaction();
-		OVT_FOBData fob = rf.GetNearestFOBData(pos);
+		OVT_CampData fob = rf.GetNearestCampData(pos);
 		rf.AddGarrisonFOB(fob, prefabIndex);
 	}
 	
@@ -613,6 +613,32 @@ class OVT_PlayerCommsComponent: OVT_Component
 	}
 	
 	//VEHICLES
+	void DeployFOB(IEntity vehicle)
+	{
+		RplComponent rpl = RplComponent.Cast(vehicle.FindComponent(RplComponent));
+		
+		Rpc(RpcAsk_DeployFOB, rpl.Id());
+	}	
+	
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_DeployFOB(RplId vehicle)
+	{
+		OVT_Global.GetResistanceFaction().DeployFOB(vehicle);
+	}
+	
+	void UndeployFOB(IEntity vehicle)
+	{
+		RplComponent rpl = RplComponent.Cast(vehicle.FindComponent(RplComponent));
+		
+		Rpc(RpcAsk_UndeployFOB, rpl.Id());
+	}	
+	
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_UndeployFOB(RplId vehicle)
+	{
+		OVT_Global.GetResistanceFaction().UndeployFOB(vehicle);
+	}
+	
 	void UpgradeVehicle(Vehicle vehicle, OVT_VehicleUpgrade upgrade)
 	{
 		int id = OVT_Global.GetEconomy().GetInventoryId(upgrade.m_pUpgradePrefab);

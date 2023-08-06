@@ -289,18 +289,28 @@ class OVT_MapIcons : SCR_MapUIBaseComponent
 			m_Widgets.Insert(w);
 		}
 		
-		foreach(OVT_FOBData fob : resistance.m_FOBs)
+		foreach(OVT_CampData fob : resistance.m_Camps)
 		{			
 			m_Centers.Insert(fob.location);
+			m_Ranges.Insert(m_fCeiling);
+			
+			Widget w = GetGame().GetWorkspace().CreateWidgets(m_Layout, m_RootWidget);
+			ImageWidget image = ImageWidget.Cast(w.FindAnyWidget("Image"));
+						
+			image.LoadImageFromSet(0, m_Imageset, "camp");
+			
+			m_Widgets.Insert(w);
+		}
+		
+		if(resistance.m_bFOBDeployed)
+		{
+			m_Centers.Insert(resistance.m_vFOBLocation);
 			m_Ranges.Insert(0);
 			
 			Widget w = GetGame().GetWorkspace().CreateWidgets(m_Layout, m_RootWidget);
 			ImageWidget image = ImageWidget.Cast(w.FindAnyWidget("Image"));
 						
-			image.LoadImageFromSet(0, m_Imageset, "fob");			
-			
-			Faction faction = GetGame().GetFactionManager().GetFactionByIndex(fob.faction);
-			image.SetColor(faction.GetFactionColor());
+			image.LoadImageFromSet(0, m_Imageset, "fob");
 			
 			m_Widgets.Insert(w);
 		}
@@ -318,17 +328,6 @@ class OVT_MapIcons : SCR_MapUIBaseComponent
 			Faction faction = GetGame().GetFactionManager().GetFactionByIndex(tower.faction);
 			image.SetColor(faction.GetFactionColor());
 								
-			m_Widgets.Insert(w);
-		}
-		
-		if(player.camp[0] != 0)
-		{
-			m_Centers.Insert(player.camp);
-			m_Ranges.Insert(0);
-			Widget w = GetGame().GetWorkspace().CreateWidgets(m_Layout, m_RootWidget);
-			ImageWidget image = ImageWidget.Cast(w.FindAnyWidget("Image"));
-						
-			image.LoadImageFromSet(0, m_Imageset, "camp");			
 			m_Widgets.Insert(w);
 		}
 		

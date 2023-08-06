@@ -65,7 +65,8 @@ enum OVT_TargetType
 	BASE,
 	BROADCAST_TOWER,
 	FOB,
-	WAREHOUSE
+	WAREHOUSE,
+	CAMP
 }
 
 enum OVT_OrderType
@@ -174,9 +175,14 @@ class OVT_OccupyingFactionManager: OVT_Component
 	
 	void PostGameStart()
 	{
+		float timeMul = 6;
+		OVT_TimeAndWeatherHandlerComponent tw = OVT_TimeAndWeatherHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(OVT_TimeAndWeatherHandlerComponent));
+		
+		if(tw) timeMul = tw.GetDayTimeMultiplier();
+		
 		GetGame().GetCallqueue().CallLater(SpawnBaseControllers, 0);
 		
-		GetGame().GetCallqueue().CallLater(CheckUpdate, OF_UPDATE_FREQUENCY / m_Config.m_iTimeMultiplier, true, GetOwner());		
+		GetGame().GetCallqueue().CallLater(CheckUpdate, OF_UPDATE_FREQUENCY / timeMul, true, GetOwner());		
 		
 		GetGame().GetCallqueue().CallLater(CheckRadioTowers, 9000, true, GetOwner());	
 		
@@ -656,6 +662,8 @@ class OVT_OccupyingFactionManager: OVT_Component
 	
 	void CheckUpdate()
 	{
+		if(!m_Time) m_Time = GetGame().GetTimeAndWeatherManager();
+		
 		PlayerManager mgr = GetGame().GetPlayerManager();		
 		if(mgr.GetPlayerCount() == 0)
 		{
@@ -785,13 +793,13 @@ class OVT_OccupyingFactionManager: OVT_Component
 		//To-Do: target discovery not by magic
 		OVT_ResistanceFactionManager resistance = OVT_Global.GetResistanceFaction();
 		
-		foreach(OVT_FOBData fob : resistance.m_FOBs)
+		foreach(OVT_CampData fob : resistance.m_Camps)
 		{
 			if(!IsKnownTarget(fob.location))
 			{
 				OVT_TargetData target = new OVT_TargetData();
 				target.location = fob.location;
-				target.type = OVT_TargetType.FOB;
+				target.type = OVT_TargetType.CAMP;
 				target.order = OVT_OrderType.ATTACK;
 				m_aKnownTargets.Insert(target);
 			}
